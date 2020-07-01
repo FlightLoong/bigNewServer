@@ -2,15 +2,13 @@ const express = require('express')
 // 创建路由对象
 const router = express.Router()
 
-// 注册新用户
-router.post('/reguser', (req, res) => {
-  res.send('reguser Ok')
-})
+// 导入用户路由处理函数模块
+const userHandle = require('../router_handler/user')
 
-// 登录
-router.post('/login', (req, res) => {
-  res.send('Login Ok')
-})
+// 注册新用户
+router.post('/reguser', userHandle.regUser)
+// 登录功能
+router.post('/login', userHandle.login)
 
 // 将路由对象共享出去
 module.exports = router
