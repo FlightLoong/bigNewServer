@@ -13,10 +13,10 @@ exports.regUser = (req, res) => {
   console.log(userinfo.username)
 
   // 对表单中的数据进行合法性校验
-  if (!userinfo.username || !userinfo.password) {
-    // return res.send({ status: 1, message: '用户名和密码不正确' })
-    return res.cc('用户名和密码不正确')
-  }
+  // if (!userinfo.username || !userinfo.password) {
+  //   // return res.send({ status: 1, message: '用户名和密码不正确' })
+  //   return res.cc('用户名和密码不正确')
+  // }
 
   // 定义 sql 语句
   const sqlStr = 'select * from ev_users where username=?'

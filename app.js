@@ -3,6 +3,7 @@ const express = require('express')
 
 // 创建 express 的服务器实例
 const app = express()
+const joi = require('@hapi/joi')
 
 // 导入 cors 中间件
 const cors = require('cors')
@@ -29,6 +30,14 @@ app.use((req, res, next) => {
 // 导入并注册用户路由模块
 const userRouter = require('./router/user')
 app.use('/api', userRouter)
+
+// 错误中间件
+app.use((err, req, res, next) => {
+  // 数据验证失败
+  if (err instanceof joi.ValidationError) return res.cc(err)
+  // 未知错误
+  res.cc(err)
+})
 
 // 指定端口并启动 web 服务器
 app.listen(8000, () => {
