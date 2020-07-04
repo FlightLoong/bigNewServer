@@ -22,3 +22,21 @@ exports.getUserInfo = (req, res) => {
     })
   })
 }
+
+// 更新用户基本信息的处理函数
+exports.updateUserInfo = (req, res) => {
+  // 定义更新用户信息的 sql 语句
+  const sql = `update ev_users set ? where id=?`
+
+  // 调用 db.query() 执行 sql 语句
+  db.query(sql, [req.body, req.body.id], (err, results) => {
+    // 执行 sql 语句失败
+    if (err) return res.cc(err)
+
+    // 执行 sql 语句成功，但影响函数不为 1、
+    if (results.affectedRows !== 1) return res.cc('修改用户基本信息失败！')
+
+    // 修改用户信息成功
+    return res.cc('修改用户基本信息成功！', 0)
+  })
+}
