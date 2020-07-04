@@ -27,6 +27,13 @@ app.use((req, res, next) => {
   next()
 })
 
+// 导入全局的配置文件
+const config = require('./config')
+// 解析 token 的中间件
+const expressJWT = require('express-jwt')
+// 使用 .unless 方法指定哪些接口不需要进行 Token 的身份认证
+app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] }))
+
 // 导入并注册用户路由模块
 const userRouter = require('./router/user')
 app.use('/api', userRouter)
@@ -35,11 +42,13 @@ app.use('/api', userRouter)
 app.use((err, req, res, next) => {
   // 数据验证失败
   if (err instanceof joi.ValidationError) return res.cc(err)
+  // 在身份认证失败后，捕获并处理 Token 认证失败后的错误
+  if (err.name === 'UnauthorizedError') return res.cc('身份认证失败！')
   // 未知错误
   res.cc(err)
 })
 
 // 指定端口并启动 web 服务器
-app.listen(8000, () => {
-  console.log('api server running at http://127.0.0.1:8000')
+app.listen(3000, () => {
+  console.log('api server running at http://127.0.0.1:3000')
 })

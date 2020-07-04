@@ -13,7 +13,7 @@ const { reg_login_schema } = require('../schema/user')
 // 注册新用户
 router.post('/reguser', expressJoi(reg_login_schema), userHandle.regUser)
 // 登录功能
-router.post('/login', userHandle.login)
+router.post('/login', expressJoi(reg_login_schema), userHandle.login)
 
 // 将路由对象共享出去
 module.exports = router

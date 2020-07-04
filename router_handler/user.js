@@ -5,6 +5,10 @@
 // 导入数据库操作模块
 const db = require('../db/index')
 const bcrypt = require('bcryptjs')
+// 生成 Token 字符串
+const jwt = require('jsonwebtoken')
+// 导入配置文件
+const config = require('../config')
 
 // 注册用户的处理函数
 exports.regUser = (req, res) => {
@@ -55,5 +59,36 @@ exports.regUser = (req, res) => {
 
 // 登录的处理函数
 exports.login = (req, res) => {
-  res.send('login Ok')
+  // 接收表单传递过来的数据
+  const userInfo = req.body
+  // 定义 sql 语句
+  const sql = `select * from ev_users where username=?`
+  // 执行 sql 语句，根据用户名查询用户的信息
+  db.query(sql, userInfo.username, (err, results) => {
+    // 指定 sql 失败
+    if (err) return res.cc(err)
+    // 执行 sql 语句成功，但是获取到的数据条数不等于 1
+    if (results.length !== 1) return res.cc('登录失败')
+
+    // 判断用户名和密码是否正确
+    // 将用户输入的密码和数据库中存储的密码进行比较
+    const compareResult = bcrypt.compareSync(userInfo.password, results[0].password)
+    // 根据对比后的结果进行判断
+    if (!compareResult) return res.cc('登录失败！')
+
+    // 登录成功以后，给用户返回 token 值
+    // 剔除 user 返回的 头像和密码 信息，
+    const user = { ...results[0], password: '', user_pic: '' }
+
+    // 生成 Token 字符串内容
+    const tokenStr = jwt.sign(user, config.jwtSecretKey, {expiresIn: config.expiresIn})
+
+    // 将生成的 Token 字符串响应给客户端
+    res.send({
+      status: 0,
+      message: '登录成功！',
+      // 为了方便客户端使用 Token，在服务器端直接拼接上 Bearer 的前缀
+      token: 'Bearer ' + tokenStr,
+    })
+  })
 }
