@@ -36,7 +36,10 @@ app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] 
 
 // 导入并注册用户路由模块
 const userRouter = require('./router/user')
+// 导入并使用用户信息的路由模块
+const userinfoRouter = require('./router/userinfo')
 app.use('/api', userRouter)
+app.use('/my', userinfoRouter)
 
 // 错误中间件
 app.use((err, req, res, next) => {
